@@ -1,3 +1,7 @@
-fn main() {
-    println!("Hello, world!");
-}
+
+
+use std::ffi::*;
+
+pub mod safe;
+pub mod raw;
+
