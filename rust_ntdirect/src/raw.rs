@@ -22,7 +22,7 @@ extern "C" {
     pub fn Bid(instrument: *const c_char, price: c_double, size: c_int) -> c_int;
 
     /// Similar to Bid, but can be sync'ed to an external playback.
-    pub fn BidPlayback(instrument: *const c_char, price: c_double, size: c_int, timestamp: *const c_char);
+    pub fn BidPlayback(instrument: *const c_char, price: c_double, size: c_int, timestamp: *const c_char) -> c_int;
 
     /// Gets the buying power for the specified account. (Not all brokerage technologies support this value.)
     pub fn BuyingPower(account: *const c_char) -> c_double;
