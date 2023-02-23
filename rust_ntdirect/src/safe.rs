@@ -10,6 +10,32 @@ enum MarketDataType {
     Bid,
 }
 
+fn parse_datetime() {}
+
+fn separate(list: String) -> Vec<String> {
+    let separator: char = '|';
+    // Holds index values of separator characters
+    let mut separators = list.char_indices().filter(|(_, char)| char == &separator).map(|(index, _)| index);
+    let separator_count: usize = separators.clone().count();
+    let mut separated: Vec<String> = Vec::with_capacity(separator_count + 1);
+
+    let mut start: usize = 0;
+    while let Some(index) = separators.next() {
+        let chunk: &str = &list[start..index];
+        if !chunk.is_empty() {
+            separated.push(chunk.to_string())
+        }
+        start = index + 1;
+    }
+    
+    let last_chunk: &str = &list[start..];
+    if !last_chunk.is_empty() {
+        separated.push(last_chunk.to_string())
+    }
+
+    return separated
+}
+
 // other custom types? OrderId etc that implement formatting
 
 // need unwrap errors handled
@@ -149,18 +175,27 @@ fn market_position(instrument: &str, account: &str) -> i32 {
 }
 
 // needs to convert from pointer to i8 bytes to rust string, may want custom order_id type
-// fn new_order_id() -> String {
-//     let result: *const c_char = unsafe { NewOrderId()};
-//     let result: CString = CString::try_from(result).unwrap();
-//     let result: String = String::try_from(result);
-//     return result
-// }
+ fn new_order_id() -> String {
+    let result: &CStr = unsafe { CStr::from_ptr(NewOrderId()) };
+    let result: String = result.to_str().unwrap().to_string();
+    return result
+ }
 
-// needs to convert to rust string and parse into vecs
-// fn orders(account: &str) -> Vec<String> {}
+fn orders(account: &str) -> Vec<String> {
+    let account: CString = CString::new(account).unwrap();
+    let result: &CStr = unsafe { CStr::from_ptr(Orders(account.as_ptr())) };
+    let result: String = result.to_str().unwrap().to_string();
+    let result: Vec<String> = separate(result);
+    return result
+}
 
-// needs to convert to rust string, may need custom types
-// fn order_status(order_id: &str) -> String {}
+// may need custom types
+fn order_status(order_id: &str) -> String {
+    let order_id: CString = CString::new(order_id).unwrap();
+    let result: &CStr = unsafe { CStr::from_ptr(OrderStatus(order_id.as_ptr())) };
+    let result: String = result.to_str().unwrap().to_string();
+    return result
+}
 
 fn realized_pnl(account: &str) -> f64 {
     let account: CString = CString::new(account).unwrap();
@@ -182,11 +217,23 @@ fn setup(host: &str, port: i32) -> bool {
 }
 
 // need to convert to rust string and parse
-// fn get_stop_orders() -> Vec<String> {}
+fn get_stop_orders(strategy_id: &str) -> Vec<String> {
+    let strategy_id: CString = CString::new(strategy_id).unwrap();
+    let result: &CStr = unsafe { CStr::from_ptr(StopOrders(strategy_id.as_ptr())) };
+    let result: String = result.to_str().unwrap().to_string();
+    let result: Vec<String> = separate(result);
+    return result
+}
 
 // need to convert to rust string
-// fn strategies(account: &str) -> Vec<String> {}
-
+fn strategies(account: &str) -> Vec<String> {
+    let account: CString = CString::new(account).unwrap();
+    let result: &CStr = unsafe { CStr::from_ptr(Strategies(account.as_ptr())) };
+    let result: String = result.to_str().unwrap().to_string();
+    let result: Vec<String> = separate(result);
+    return result
+}
+   
 // enum like market position?
 fn strategy_position(strategy_id: &str) -> i32 {
     let strategy_id: CString = CString::new(strategy_id).unwrap();
@@ -205,7 +252,13 @@ fn subscribe_market_data(instrument: &str) -> bool {
 }
 
 // need to convert to rust string
-// get_target_orders(strategy_id: &str) -> Vec<String> {}
+fn get_target_orders(strategy_id: &str) -> Vec<String> {
+    let strategy_id: CString = CString::new(strategy_id).unwrap();
+    let result: &CStr = unsafe { CStr::from_ptr(Orders(strategy_id.as_ptr())) };
+    let result: String = result.to_str().unwrap().to_string();
+    let result: Vec<String> = separate(result);
+    return result
+}
 
 fn tear_down() -> bool {
     let result: i32 = unsafe { TearDown() };    
