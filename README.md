@@ -1,2 +1,2 @@
 # rust-ntdirect
-Library to use NinjaTrader's NTDirect.dll C/C++ API functions in Rust code
+Rust FFI library for NinjaTrader's NTDirect.dll C++ API
