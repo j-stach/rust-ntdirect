@@ -10,7 +10,7 @@ pub(super) enum MarketDataType {
 }
 
 #[allow(dead_code)]
-pub(super) fn string_from_datetime(datetime: DateTime<Utc>) -> String {
+pub(super) fn format_datetime(datetime: DateTime<Utc>) -> String {
     datetime.format("%Y%m%d%H%M%S").to_string()
 }
 

@@ -5,18 +5,18 @@ mod errors;
 // custom enums for market position, order type, tif, oco
 
 // custom types/type aliases for order id, strategy id, etc?
+// convert f64s to money type for formatting?
 
 #[allow(dead_code)] 
 pub mod safe {
 
     use std::ffi::*;
-    use std::fmt::Error;
     use std::result::Result; 
     use chrono::{DateTime, Utc};
 
     use crate::raw::*;
     use crate::safe::helpers::*;
-    use crate::safe::errors::NTDirectError;
+    use crate::safe::errors::{NTDirectError, NTDirectError::*};
 
     // needs result with error type
     fn ask(instrument: &str, price: f64, size: i32) -> Result<(), NTDirectError> {
@@ -27,7 +27,7 @@ pub mod safe {
         let result: i32 = i32::try_from(result).unwrap();
         match result {
             0 => Ok(()),
-            -1 => Err(NTDirectError::OrderError("Ask".to_string())),
+            -1 => Err(OrderError("Ask".to_string())),
             _ => panic!("Ask() returned an unexpected value"),
         }
     }
@@ -37,13 +37,13 @@ pub mod safe {
         let instrument: CString = CString::new(instrument).unwrap();
         let price: c_double = c_double::try_from(price).unwrap();
         let size: c_int = c_int::try_from(size).unwrap();
-        let timestamp: CString = CString::new(string_from_datetime(timestamp)).unwrap();
+        let timestamp: CString = CString::new(format_datetime(timestamp)).unwrap();
 
         let result: c_int = unsafe { AskPlayback(instrument.as_ptr(), price, size, timestamp.as_ptr()) };
         let result: i32 = i32::try_from(result).unwrap();
         match result {
             0 => Ok(()),
-            -1 => Err(NTDirectError::OrderError("AskPlayback".to_string())),
+            -1 => Err(OrderError("AskPlayback".to_string())),
             _ => panic!("AskPlayback() returned an unexpected value"),
         }
     }
@@ -73,7 +73,7 @@ pub mod safe {
         let result: i32 = i32::try_from(result).unwrap();
         match result {
             0 => Ok(()),
-            -1 => Err(NTDirectError::OrderError("Bid".to_string())),
+            -1 => Err(OrderError("Bid".to_string())),
             _ => panic!("Bid() returned an unexpected value"),
         }
     }
@@ -82,13 +82,13 @@ pub mod safe {
     fn bid_playback(instrument: &str, price: f64, size: i32, timestamp: DateTime<Utc>) -> Result<(), NTDirectError> {
         let instrument: CString = CString::new(instrument).unwrap();
         let price: c_double = c_double::try_from(price).unwrap();
-        let timestamp: CString = CString::new(string_from_datetime(timestamp)).unwrap();
+        let timestamp: CString = CString::new(format_datetime(timestamp)).unwrap();
 
         let result: c_int = unsafe { BidPlayback(instrument.as_ptr(), price, size, timestamp.as_ptr()) };
         let result: i32 = i32::try_from(result).unwrap();
         match result {
             0 => Ok(()),
-            -1 => Err(NTDirectError::OrderError("BidPayback".to_string())),
+            -1 => Err(OrderError("BidPayback".to_string())),
             _ => panic!("BidPlayback() returned an unexpected value"),
         }
     }
@@ -107,8 +107,9 @@ pub mod safe {
         return result
     }
 
-    // needs result with error type
-    // look into valid commands, may be able to make it easier
+    /* todo */
+    // look into valid commands, may be able to make it easier with types & enums in its own mod
+    // seems like the bulk of the trading happens through command
     fn command(nt_command: &str, account: &str, instrument: &str, action: &str, size: i32, order_type: &str, limit_price: f64, stop_price: f64, 
                tif: &str, oco: &str, order_id: &str, strategy: &str, strategy_id: &str) -> Result<(), NTDirectError> {
 
@@ -132,11 +133,12 @@ pub mod safe {
         let result: i32 = i32::try_from(result).unwrap();
         match result {
             0 => Ok(()),
-            -1 => Err(NTDirectError::CommandError(nt_command.to_string())),
+            -1 => Err(CommandError(nt_command.to_string())),
             _ => panic!("Command() returned an unexpected value"),
         }
     }
 
+    /* todo */
     // may need debugging. does it return an error or the value of the toggle?
     fn confirm_orders(confirm: bool) -> bool {
         let confirm: c_int = match confirm {
@@ -153,7 +155,7 @@ pub mod safe {
     }
 
 
-    // needs result with error type
+    /// Attempts to initiate a connection to the NT8 platform
     fn connected(show_message: bool) -> Result<(), NTDirectError> {
         let show_message: c_int = c_int::try_from(match show_message {
             true => 1,
@@ -163,11 +165,12 @@ pub mod safe {
         let result: i32 = i32::try_from(result).unwrap();
         match result {
             0 => Ok(()),
-            -1 => Err(NTDirectError::ConnectionError("No connection established".to_string())),
+            -1 => Err(ConnectionError("No connection established".to_string())),
             _ => panic!("Connection() returned an unexpected value"),
         }
     }
 
+    /// Gets the number of contracts filled for the specified order.
     fn filled(order_id: &str) -> i32 {
         let order_id: CString = CString::new(order_id).unwrap();
         let result: c_int = unsafe { Filled(order_id.as_ptr()) };
@@ -175,7 +178,7 @@ pub mod safe {
         return result
     }
 
-    // needs result with error type
+    /// Sets the Last price for an instrument?? Clarify what this means
     fn last(instrument: &str, price: f64, size: i32) -> Result<(), NTDirectError> {
         let instrument: CString = CString::new(instrument).unwrap();
         let price: c_double = c_double::try_from(price).unwrap();
@@ -185,27 +188,28 @@ pub mod safe {
         let result: i32 = i32::try_from(result).unwrap();
         match result {
             0 => Ok(()),
-            -1 => Err(NTDirectError::OrderError("Last".to_string())),
+            -1 => Err(OrderError("Last".to_string())),
             _ => panic!("Last() returned an unexpected value"),
         }
     }
 
-    // needs result with error type
+    /// Same as Last, but able to sync with an external playback?? Clarify what this means
     fn last_playback(instrument: &str, price: f64, size: i32, timestamp: DateTime<Utc>) -> Result<(), NTDirectError> {
         let instrument: CString = CString::new(instrument).unwrap();
         let price: c_double = c_double::try_from(price).unwrap();
         let size: c_int = c_int::try_from(size).unwrap();
-        let timestamp: CString = CString::new(string_from_datetime(timestamp)).unwrap();
+        let timestamp: CString = CString::new(format_datetime(timestamp)).unwrap();
 
         let result: c_int = unsafe { LastPlayback(instrument.as_ptr(), price, size, timestamp.as_ptr()) };
         let result: i32 = i32::try_from(result).unwrap();
         match result {
             0 => Ok(()),
-            -1 => Err(NTDirectError::OrderError("LastPayback".to_string())),
+            -1 => Err(OrderError("LastPayback".to_string())),
             _ => panic!("LastPlayback() returned an unexpected value"),
         }
     }
 
+    /// Gets the latest price by data type for an instrument. Must be subscribed to a data stream for that instrument.
     fn market_data(instrument: &str, market_data_type: MarketDataType) -> f64 {
         let instrument: CString = CString::new(instrument).unwrap();
         let market_data_type: c_int = c_int::try_from(match market_data_type {
@@ -218,6 +222,7 @@ pub mod safe {
         return result
     }
 
+    /* todo */
     // enum for position?
     fn market_position(instrument: &str, account: &str) -> i32 {
         let instrument: CString = CString::new(instrument).unwrap();
@@ -227,12 +232,14 @@ pub mod safe {
         return result
     }
 
+    /// Creates a new unique order id value.
     fn new_order_id() -> String {
        let result: &CStr = unsafe { CStr::from_ptr(NewOrderId()) };
        let result: String = result.to_str().unwrap().to_string();
        return result
     }
 
+    /// Gets all active orders for an account.
     fn orders(account: &str) -> Vec<String> {
         let account: CString = CString::new(account).unwrap();
         let result: &CStr = unsafe { CStr::from_ptr(Orders(account.as_ptr())) };
@@ -241,6 +248,8 @@ pub mod safe {
         return result
     }
 
+    /* todo */
+    // custom type for order status: can it be an enum?
     fn order_status(order_id: &str) -> String {
         let order_id: CString = CString::new(order_id).unwrap();
         let result: &CStr = unsafe { CStr::from_ptr(OrderStatus(order_id.as_ptr())) };
@@ -248,6 +257,7 @@ pub mod safe {
         return result
     }
 
+    /// Gets the realized profit/loss for an account.
     fn realized_pnl(account: &str) -> f64 {
         let account: CString = CString::new(account).unwrap();
         let result: c_double = unsafe { RealizedPnL(account.as_ptr())};
@@ -255,7 +265,7 @@ pub mod safe {
         return result
     }
 
-    // needs result with error type
+    /* todo */
     // check integer types for ports, unsigned? TcpStream destructure?
     fn setup(host: &str, port: i32) -> Result<(), NTDirectError> {
         let host: CString = CString::new(host).unwrap();
@@ -265,11 +275,12 @@ pub mod safe {
         let result: i32 = i32::try_from(result).unwrap();
         match result {
             0 => Ok(()),
-            -1 => Err(NTDirectError::ConfigurationError("Setup".to_string())),
+            -1 => Err(ConfigurationError("Setup".to_string())),
             _ => panic!("SetUp() returned an unexpected value"),
         }
     }
 
+    /// Gets all stop loss orders for an active strategy.
     fn get_stop_orders(strategy_id: &str) -> Vec<String> {
         let strategy_id: CString = CString::new(strategy_id).unwrap();
         let result: &CStr = unsafe { CStr::from_ptr(StopOrders(strategy_id.as_ptr())) };
@@ -278,6 +289,7 @@ pub mod safe {
         return result
     }
 
+    /// Gets a list of all active strategies.
     fn strategies(account: &str) -> Vec<String> {
         let account: CString = CString::new(account).unwrap();
         let result: &CStr = unsafe { CStr::from_ptr(Strategies(account.as_ptr())) };
@@ -286,6 +298,7 @@ pub mod safe {
         return result
     }
     
+    /* todo */
     // enum like market position?
     fn strategy_position(strategy_id: &str) -> i32 {
         let strategy_id: CString = CString::new(strategy_id).unwrap();
@@ -294,18 +307,19 @@ pub mod safe {
         return result
     }
 
-    // needs result with error type
+    /// Starts a new market data stream for a specified instrument.
     fn subscribe_market_data(instrument: &str) -> Result<(), NTDirectError> {
         let instrument: CString = CString::new(instrument).unwrap();
         let result: c_int = unsafe { SubscribeMarketData(instrument.as_ptr()) };
         let result: i32 = i32::try_from(result).unwrap();
         match result {
             0 => Ok(()),
-            -1 => Err(NTDirectError::ConnectionError("Unable to connect to market data stream".to_string())),
+            -1 => Err(ConnectionError("Unable to connect to market data stream".to_string())),
             _ => panic!("SubscribeMarketData() returned an unexpected value"),
         }
     }
 
+    /// Gets the profit target orders for an active strategy.
     fn get_target_orders(strategy_id: &str) -> Vec<String> {
         let strategy_id: CString = CString::new(strategy_id).unwrap();
         let result: &CStr = unsafe { CStr::from_ptr(TargetOrders(strategy_id.as_ptr())) };
@@ -314,25 +328,25 @@ pub mod safe {
         return result
     }
 
-    // needs result with error type
+    /// Disconnects from the NT8 platform
     fn tear_down() -> Result<(), NTDirectError> {
         let result: c_int = unsafe { TearDown() };    
         let result: i32 = i32::try_from(result).unwrap();
         match result {
             0 => Ok(()),
-            -1 => Err(NTDirectError::ConfigurationError("Teardown".to_string())),
+            -1 => Err(ConfigurationError("Teardown".to_string())),
             _ => panic!("TearDown() returned an unexpected value"),
         }
     }
 
-    // needs result with error type
+    /// Stops the data stream for an instrument. Remember to call this on clean up or the connection may remain open.
     fn unsubscribe_market_data(instrument: &str) -> Result<(), NTDirectError> {
         let instrument: CString = CString::new(instrument).unwrap();
         let result: c_int = unsafe { UnsubscribeMarketData(instrument.as_ptr()) };
         let result: i32 = i32::try_from(result).unwrap();
         match result {
             0 => Ok(()),
-            -1 => Err(NTDirectError::ConnectionError("Failed to unsubscribe from market data stream".to_string())),
+            -1 => Err(ConnectionError("Failed to unsubscribe from market data stream".to_string())),
             _ => panic!("UnsubscribeMarketData() returned an unexpected value"),
         }
     }
