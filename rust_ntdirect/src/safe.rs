@@ -1,8 +1,16 @@
 use std::ffi::*;
-use chrono::{DateTime, Utc, TimeZone};
+use chrono::{DateTime, Utc};
 
 use crate::raw::*;
 
+
+// need to add error types for bool returns
+
+// custom enums for market position, order type, tif, oco
+
+// custom types/type aliases for order id, strategy id, etc?
+
+// move these helper functions into a new file?
 #[derive(Clone, Copy)]
 #[allow(dead_code, unused_variables)]
 enum MarketDataType {
@@ -14,8 +22,6 @@ enum MarketDataType {
 fn string_from_datetime(datetime: DateTime<Utc>) -> String {
     datetime.format("%Y%m%d%H%M%S").to_string()
 }
-
-fn string_to_datetime() {}
 
 fn separate(list: String) -> Vec<String> {
     let separator: char = '|';
@@ -41,12 +47,7 @@ fn separate(list: String) -> Vec<String> {
     return separated
 }
 
-// other custom types? OrderId etc that implement formatting
-
-// need unwrap errors handled
-// bool returns need to be success/fail errors?
-// would be good practice error handling, and also make interface more rusty
-// or save that for my own program?
+// Foreign functions begin here
 
 fn ask(instrument: &str, price: f64, size: i32) -> bool {
     let instrument: CString = CString::new(instrument).unwrap();
@@ -62,7 +63,6 @@ fn ask(instrument: &str, price: f64, size: i32) -> bool {
 
 }
 
-// needs a way to parse the timestamp as a string for the ffi (yyyyMMddHHmmss)
 fn ask_playback(instrument: &str, price: f64, size: i32, timestamp: DateTime<Utc>) -> bool {
     let instrument: CString = CString::new(instrument).unwrap();
     let price: c_double = c_double::try_from(price).unwrap();
@@ -135,8 +135,8 @@ fn cash_value(account: &str) -> f64 {
     return result
 }
 
-// needs order type & tif enums? look into valid commands before building this, may be able to make it easier
-fn command(command: &str, account: &str, instrument: &str, action: &str, quantity: i32, order_type: &str, limit_price: f64, stop_price: f64, 
+// look into valid commands, may be able to make it easier
+fn command(command: &str, account: &str, instrument: &str, action: &str, size: i32, order_type: &str, limit_price: f64, stop_price: f64, 
            tif: &str, oco: &str, order_id: &str, strategy: &str, strategy_id: &str) -> bool {
 
     let command: CString = CString::new(command).unwrap();
@@ -145,7 +145,7 @@ fn command(command: &str, account: &str, instrument: &str, action: &str, quantit
     let action: CString = CString::new(action).unwrap();
     let limit_price: c_double = c_double::try_from(limit_price).unwrap();
     let stop_price: c_double = c_double::try_from(stop_price).unwrap();
-    let quantity: c_int = c_int::try_from(quantity).unwrap();
+    let size: c_int = c_int::try_from(size).unwrap();
     let order_type: CString = CString::new(order_type).unwrap();
     let order_id: CString = CString::new(order_id).unwrap();
     let strategy_id: CString = CString::new(strategy_id).unwrap();
@@ -154,7 +154,7 @@ fn command(command: &str, account: &str, instrument: &str, action: &str, quantit
     let oco: CString = CString::new(oco).unwrap();
 
     let result: c_int = unsafe { Command(command.as_ptr(), account.as_ptr(), instrument.as_ptr(), 
-                                  action.as_ptr(), quantity, order_type.as_ptr(), limit_price, stop_price, 
+                                  action.as_ptr(), size, order_type.as_ptr(), limit_price, stop_price, 
                                   tif.as_ptr(), oco.as_ptr(), strategy.as_ptr(), strategy_id.as_ptr()) };
     let result: i32 = i32::try_from(result).unwrap();
     match result {
