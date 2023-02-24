@@ -30,7 +30,7 @@ extern "C" {
     pub fn CashValue(account: *const c_char) -> c_double;
 
     /// Function for managing active orders, positions, and strategies. Refer to NT documentation "Commands and Valid Parameters".
-    pub fn Command(command: *const c_char, account: *const c_char, instrument: *const c_char, action: *const c_char, quantity: c_int, order_type: *const c_char, limit_price: c_double, stop_price: c_double, tif: *const c_char, oco: *const c_char, strategy: *const c_char, strategy_id: *const c_char) -> c_int;
+    pub fn Command(command: *const c_char, account: *const c_char, instrument: *const c_char, action: *const c_char, quantity: c_int, order_type: *const c_char, limit_price: c_double, stop_price: c_double, tif: *const c_char, oco: *const c_char, order_id: *const c_char, strategy: *const c_char, strategy_id: *const c_char) -> c_int;
 
     /// Indicates if an order confirmation message will appear. For use with NT trading platform.
     pub fn ConfirmOrders(confirm: c_int) -> c_int;
