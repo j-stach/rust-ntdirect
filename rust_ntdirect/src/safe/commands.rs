@@ -7,27 +7,29 @@
     use crate::safe::errors::{NTDirectError, NTDirectError::*};
 
 
-
-fn command(nt_command: NTCommand, account: &str, instrument: &str, action: NTAction, size: i32, order_type: OrderType, limit_price: f64, stop_price: f64, 
-           tif: TIF, oco: &str, order_id: &str, strategy: &str, strategy_id: &str) -> Result<(), NTDirectError> {
+fn command(nt_command: NTCommand, account: Option<&str>, instrument: Option<&str>, action: Option<NTAction>, 
+           size: Option<i32>, order_type: Option<OrderType>, limit_price: Option<f64>, stop_price: Option<f64>, 
+           tif: Option<TIF>, oco: Option<&str>, order_id: Option<&str>, strategy: Option<&str>, strategy_id: Option<&str>) 
+           -> Result<(), NTDirectError> {
 
     let command: CString = CString::new(nt_command.to_string()).unwrap();
-    let account: CString = CString::new(account).unwrap();
-    let instrument: CString = CString::new(instrument).unwrap();
-    let action: CString = CString::new(action.to_string()).unwrap();
-    let limit_price: c_double = c_double::try_from(limit_price).unwrap();
-    let stop_price: c_double = c_double::try_from(stop_price).unwrap();
-    let size: c_int = c_int::try_from(size).unwrap();
-    let order_type: CString = CString::new(order_type.to_string()).unwrap();
-    let order_id: CString = CString::new(order_id).unwrap();
-    let strategy_id: CString = CString::new(strategy_id).unwrap();
-    let strategy: CString = CString::new(strategy).unwrap();
-    let tif: CString = CString::new(tif.to_string()).unwrap();
-    let oco: CString = CString::new(oco).unwrap();
+    
+    let account: *const c_char = string_opt_to_ptr(account.map(|a| CString::new(a).unwrap()));
+    let instrument: *const c_char = string_opt_to_ptr(instrument.map(|i| CString::new(i).unwrap()));
+    let action: *const c_char = string_opt_to_ptr(action.map(|x| CString::new(x.to_string()).unwrap()));
+    let limit_price: *const c_double = double_opt_to_ptr(limit_price.map(|lp| c_double::try_from(lp).unwrap()));
+    let stop_price: *const c_double = double_opt_to_ptr(stop_price.map(|sp| c_double::try_from(sp).unwrap()));
+    let size: *const c_int = int_opt_to_ptr(size.map(|s| c_int::try_from(s).unwrap()));
+    let order_type: *const c_char = string_opt_to_ptr(order_type.map(|t| CString::new(t.to_string()).unwrap()));
+    let order_id: *const c_char = string_opt_to_ptr(order_id.map(|id| CString::new(id).unwrap()));
+    let strategy_id: *const c_char = string_opt_to_ptr(strategy_id.map(|id| CString::new(id).unwrap()));
+    let strategy: *const c_char = string_opt_to_ptr(strategy.map(|s| CString::new(s).unwrap()));
+    let tif: *const c_char = string_opt_to_ptr(tif.map(|tif| CString::new(tif.to_string()).unwrap()));
+    let oco: *const c_char = string_opt_to_ptr(oco.map(|oco| CString::new(oco).unwrap()));
 
-    let result: c_int = unsafe { Command(command.as_ptr(), account.as_ptr(), instrument.as_ptr(), 
-                                  action.as_ptr(), size, order_type.as_ptr(), limit_price, stop_price, 
-                                  tif.as_ptr(), oco.as_ptr(), order_id.as_ptr(), strategy.as_ptr(), strategy_id.as_ptr()) };
+    let result: c_int = unsafe { Command(command.as_ptr(), account, instrument, 
+                                action, size, order_type, limit_price, stop_price, 
+                                  tif, oco, order_id, strategy, strategy_id) };
     let result: i32 = i32::try_from(result).unwrap();
     match result {
         0 => Ok(()),
@@ -35,3 +37,37 @@ fn command(nt_command: NTCommand, account: &str, instrument: &str, action: NTAct
         _ => panic!("Command() returned an unexpected value"),
     }
 }
+
+
+fn cancel(order_id: &str, strategy_id: Option<&str>) {
+    
+}
+
+fn cancel_all_orders() {}
+
+fn change(order_id: &str, size: Option<i32>, limit_price: Option<f64>, stop_price: Option<f64>, strategy_id: Option<&str>) {
+
+}
+
+fn close_position(account: &str, instrument: &str) {
+
+}
+
+fn close_strategy(strategy_id: &str) {
+
+}
+
+fn flatten_everything() {}
+
+fn place(account: &str, instrument: &str, action: NTAction, size: i32, order_type: OrderType, 
+         limit_price: Option<f64>, stop_price: Option<f64>, tif: Option<TIF>, oco: Option<&str>, 
+         order_id: Option<&str>, strategy: Option<&str>, strategy_id: Option<&str>) {
+
+}
+
+fn reverse_position(account: &str, instrument: &str, action: NTAction, size: i32, order_type: OrderType, 
+         limit_price: Option<f64>, stop_price: Option<f64>, tif: Option<TIF>, oco: Option<&str>, 
+         order_id: Option<&str>, strategy: Option<&str>, strategy_id: Option<&str>) {
+
+}
+
