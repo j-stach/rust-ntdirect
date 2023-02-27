@@ -39,35 +39,42 @@ fn command(nt_command: NTCommand, account: Option<&str>, instrument: Option<&str
 }
 
 
-fn cancel(order_id: &str, strategy_id: Option<&str>) {
-    
-}
-
-fn cancel_all_orders() {}
-
-fn change(order_id: &str, size: Option<i32>, limit_price: Option<f64>, stop_price: Option<f64>, strategy_id: Option<&str>) {
+fn cancel(order_id: &str, strategy_id: Option<&str>) -> Result<(), NTDirectError> {
+    command(NTCommand::Cancel, None, None, None, None, None, None, None, None, None, Some(order_id), None, strategy_id)
 
 }
 
-fn close_position(account: &str, instrument: &str) {
-
+fn cancel_all_orders() -> Result<(), NTDirectError> {
+    command(NTCommand::CancelAllOrders, None, None, None, None, None, None, None, None, None, None, None, None)
 }
 
-fn close_strategy(strategy_id: &str) {
-
+fn change(order_id: &str, size: Option<i32>, limit_price: Option<f64>, stop_price: Option<f64>, strategy_id: Option<&str>) -> Result<(), NTDirectError> {
+    command(NTCommand::Change, None, None, None, size, None, limit_price, stop_price, None, None, Some(order_id), None, strategy_id)
 }
 
-fn flatten_everything() {}
+fn close_position(account: &str, instrument: &str) -> Result<(), NTDirectError> {
+    command(NTCommand::ClosePosition, Some(account), Some(instrument), None, None, None, None, None, None, None, None, None, None)
+}
+
+fn close_strategy(strategy_id: &str) -> Result<(), NTDirectError> {
+    command(NTCommand::CloseStrategy, None, None, None, None, None, None, None, None, None, None, None, Some(strategy_id))
+}
+
+fn flatten_everything() -> Result<(), NTDirectError> {
+    command(NTCommand::FlattenEverything, None, None, None, None, None, None, None, None, None, None, None, None)
+}
 
 fn place(account: &str, instrument: &str, action: NTAction, size: i32, order_type: OrderType, 
          limit_price: Option<f64>, stop_price: Option<f64>, tif: Option<TIF>, oco: Option<&str>, 
-         order_id: Option<&str>, strategy: Option<&str>, strategy_id: Option<&str>) {
-
+         order_id: Option<&str>, strategy: Option<&str>, strategy_id: Option<&str>) 
+         -> Result<(), NTDirectError> {
+    command(NTCommand::Place, Some(account), Some(instrument), Some(action), Some(size), Some(order_type), limit_price, stop_price, tif, oco, order_id, strategy, strategy_id)
 }
 
 fn reverse_position(account: &str, instrument: &str, action: NTAction, size: i32, order_type: OrderType, 
-         limit_price: Option<f64>, stop_price: Option<f64>, tif: Option<TIF>, oco: Option<&str>, 
-         order_id: Option<&str>, strategy: Option<&str>, strategy_id: Option<&str>) {
-
+                    limit_price: Option<f64>, stop_price: Option<f64>, tif: Option<TIF>, oco: Option<&str>, 
+                    order_id: Option<&str>, strategy: Option<&str>, strategy_id: Option<&str>) 
+                    -> Result<(), NTDirectError>  {
+    command(NTCommand::ReversePosition, Some(account), Some(instrument), Some(action), Some(size), Some(order_type), limit_price, stop_price, tif, oco, order_id, strategy, strategy_id)
 }
 
