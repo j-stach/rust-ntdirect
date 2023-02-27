@@ -35,7 +35,7 @@ pub(super) fn separate(list: String) -> Vec<String> {
 
 #[allow(dead_code)]
 pub mod helpful_types {
-    use std::fmt::Display;
+    use std::{fmt::Display, ffi::*,};
     
     #[derive(Clone, Copy)]
     pub enum MarketDataType {
@@ -104,6 +104,26 @@ pub mod helpful_types {
                 TIF::Day => write!(f, "DAY"),
                 TIF::GTC => write!(f, "GTC"),
             }
+        }
+    }
+
+    // Functions to handle Options for the FFI
+    pub fn string_opt_to_ptr(s: Option<CString>) -> *const c_char {
+        match s {
+            Some(inner) => inner.as_ptr(),
+            None => std::ptr::null(),
+        }
+    }
+    pub fn double_opt_to_ptr(s: Option<f64>) -> *const c_double {
+        match s {
+            Some(inner) => &inner as *const c_double,
+            None => std::ptr::null(),
+        }
+    }
+    pub fn int_opt_to_ptr(s: Option<i32>) -> *const c_int {
+        match s {
+            Some(inner) => &inner as *const c_int,
+            None => std::ptr::null(),
         }
     }
 }
