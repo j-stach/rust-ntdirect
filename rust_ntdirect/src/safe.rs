@@ -1,11 +1,15 @@
 
 mod helpers;
 mod errors;
+mod commands;
 
+// custom enums for command args
 // custom enums for market position, order type, tif, oco
 
 // custom types/type aliases for order id, strategy id, etc?
 // convert f64s to money type for formatting?
+
+// clarify what some of these damn fns do
 
 #[allow(dead_code)] 
 pub mod safe {
@@ -16,9 +20,10 @@ pub mod safe {
 
     use crate::raw::*;
     use crate::safe::helpers::*;
+    use crate::safe::helpers::helpful_types::*;
     use crate::safe::errors::{NTDirectError, NTDirectError::*};
 
-    // needs result with error type
+    /// Sets the Ask price and size for the specified instrument?? Clarify what this means
     fn ask(instrument: &str, price: f64, size: i32) -> Result<(), NTDirectError> {
         let instrument: CString = CString::new(instrument).unwrap();
         let price: c_double = c_double::try_from(price).unwrap();
@@ -32,7 +37,7 @@ pub mod safe {
         }
     }
 
-    // needs result with error type
+    /// Same as Ask, but able to sync with an external playback?? Clarify what this means
     fn ask_playback(instrument: &str, price: f64, size: i32, timestamp: DateTime<Utc>) -> Result<(), NTDirectError> {
         let instrument: CString = CString::new(instrument).unwrap();
         let price: c_double = c_double::try_from(price).unwrap();
@@ -48,6 +53,7 @@ pub mod safe {
         }
     }
 
+    /// Gets an account's average entry price for the specified instrument.
     fn avg_entry_price(instrument: &str, account: &str) -> f64 {
         let instrument: CString = CString::new(instrument).unwrap();
         let account: CString = CString::new(account).unwrap();
@@ -56,6 +62,7 @@ pub mod safe {
         return result
     }
 
+    /// Gets the average fill price for an order.
     fn avg_fill_price(order_id: &str) -> f64 {
         let order_id: CString = CString::new(order_id).unwrap();
         let result: c_double = unsafe { AvgFillPrice(order_id.as_ptr()) };
@@ -63,7 +70,7 @@ pub mod safe {
         return result
     }
 
-    // needs result with error type
+    /// Sets the bid price and size for a specified instrument?? Clarify what this means
     fn bid(instrument: &str, price: f64, size: i32) -> Result<(), NTDirectError> {
         let instrument: CString = CString::new(instrument).unwrap();
         let price: c_double = c_double::try_from(price).unwrap();
@@ -78,7 +85,7 @@ pub mod safe {
         }
     }
 
-    // needs result with error type
+    /// Same as Bid, but able to sync to an external playback?? Clarify what this means
     fn bid_playback(instrument: &str, price: f64, size: i32, timestamp: DateTime<Utc>) -> Result<(), NTDirectError> {
         let instrument: CString = CString::new(instrument).unwrap();
         let price: c_double = c_double::try_from(price).unwrap();
@@ -93,6 +100,7 @@ pub mod safe {
         }
     }
 
+    /// Gets the buying power for an account. (Not all brokerage technologies support this value.)
     fn buying_power(account: &str) -> f64 {
         let account: CString = CString::new(account).unwrap();
         let result: c_double = unsafe { BuyingPower(account.as_ptr()) };
@@ -100,6 +108,7 @@ pub mod safe {
         return result   
     }
 
+    /// Gets the cash value for an account. (Not all brokerage technologies support this value.)
     fn cash_value(account: &str) -> f64 {
         let account: CString = CString::new(account).unwrap();
         let result: c_double = unsafe { CashValue(account.as_ptr()) };

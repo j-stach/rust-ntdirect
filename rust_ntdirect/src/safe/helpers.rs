@@ -1,13 +1,6 @@
 
-use chrono::{DateTime, Utc};
 
-#[allow(dead_code)]
-#[derive(Clone, Copy)]
-pub(super) enum MarketDataType {
-    Last,
-    Ask,
-    Bid,
-}
+use chrono::{DateTime, Utc};
 
 #[allow(dead_code)]
 pub(super) fn format_datetime(datetime: DateTime<Utc>) -> String {
@@ -37,4 +30,80 @@ pub(super) fn separate(list: String) -> Vec<String> {
     }
 
     return separated
+}
+
+
+#[allow(dead_code)]
+pub mod helpful_types {
+    use std::fmt::Display;
+    
+    #[derive(Clone, Copy)]
+    pub enum MarketDataType {
+        Last,
+        Ask,
+        Bid,
+    }
+
+    pub enum NTCommand {
+        Cancel,
+        CancelAllOrders,
+        Change,
+        ClosePosition,
+        CloseStragegy,
+        FlattenEverything,
+        Place,
+        ReversePosition,
+    }
+
+    impl Display for NTCommand {
+        fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+            match self {
+                NTCommand::Cancel => write!(f, "CANCEL"), 
+                NTCommand::CancelAllOrders => write!(f, "CANCELALLORDERS"), 
+                NTCommand::Change => write!(f, "CHANGE"), 
+                NTCommand::ClosePosition => write!(f, "CLOSEPOSITION"), 
+                NTCommand::CloseStragegy => write!(f, "CLOSESTRATEGY"), 
+                NTCommand::FlattenEverything => write!(f, "FLATTENEVERYTHING"), 
+                NTCommand::Place => write!(f, "PLACE"), 
+                NTCommand::ReversePosition => write!(f, "REVERSEPOSITION"), 
+            }
+        }
+    }
+
+    pub enum NTAction { Buy, Sell, }
+    impl Display for NTAction {
+        fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+            match self {
+                NTAction::Buy => write!(f, "BUY"),
+                NTAction::Sell => write!(f, "SELL"),
+            }
+        }
+    }
+
+    pub enum OrderType {
+        Market,
+        Limit,
+        StopMarket,
+        StopLimit,
+    }
+    impl Display for OrderType {
+        fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+            match self {
+                OrderType::Market => write!(f, "MARKET"),
+                OrderType::Limit => write!(f, "LIMIT"),
+                OrderType::StopMarket => write!(f, "STOPMARKET"),
+                OrderType::StopLimit => write!(f, "STOPLIMIT"),
+            }
+        }
+    }
+
+    pub enum TIF { Day, GTC, }
+    impl Display for TIF {
+        fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+            match self {
+                TIF::Day => write!(f, "DAY"),
+                TIF::GTC => write!(f, "GTC"),
+            }
+        }
+    }
 }
