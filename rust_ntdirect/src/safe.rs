@@ -4,8 +4,6 @@ mod errors;
 mod commands;
 
 
-// clarify what some of these damn fns do
-
 #[allow(dead_code)] 
 pub mod safe {
 
