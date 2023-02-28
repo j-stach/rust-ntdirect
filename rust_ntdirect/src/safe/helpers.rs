@@ -35,7 +35,12 @@ pub(super) fn separate(list: String) -> Vec<String> {
 
 #[allow(dead_code)]
 pub mod helpful_types {
-    use std::{fmt::Display, ffi::*,};
+    use std::{fmt::Display, ffi::*};
+
+    // need types for order id, market position?
+    // format checking at least?
+
+    // instrument? how to check if viable input?
     
     #[derive(Clone, Copy)]
     pub enum MarketDataType {

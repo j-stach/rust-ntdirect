@@ -3,11 +3,6 @@ mod helpers;
 mod errors;
 mod commands;
 
-// custom enums for command args
-// custom enums for market position, order type, tif, oco
-
-// custom types/type aliases for order id, strategy id, etc?
-// convert f64s to money type for formatting?
 
 // clarify what some of these damn fns do
 
@@ -115,37 +110,6 @@ pub mod safe {
         let result: f64 = f64::try_from(result).unwrap();
         return result
     }
-
-    ///* todo */
-    //// look into valid commands, may be able to make it easier with types & enums in its own mod
-    //// seems like the bulk of the trading happens through command
-    //fn command(nt_command: &str, account: &str, instrument: &str, action: &str, size: i32, order_type: &str, limit_price: f64, stop_price: f64, 
-    //           tif: &str, oco: &str, order_id: &str, strategy: &str, strategy_id: &str) -> Result<(), NTDirectError> {
-
-    //    let command: CString = CString::new(nt_command).unwrap();
-    //    let account: CString = CString::new(account).unwrap();
-    //    let instrument: CString = CString::new(instrument).unwrap();
-    //    let action: CString = CString::new(action).unwrap();
-    //    let limit_price: c_double = c_double::try_from(limit_price).unwrap();
-    //    let stop_price: c_double = c_double::try_from(stop_price).unwrap();
-    //    let size: c_int = c_int::try_from(size).unwrap();
-    //    let order_type: CString = CString::new(order_type).unwrap();
-    //    let order_id: CString = CString::new(order_id).unwrap();
-    //    let strategy_id: CString = CString::new(strategy_id).unwrap();
-    //    let strategy: CString = CString::new(strategy).unwrap();
-    //    let tif: CString = CString::new(tif).unwrap();
-    //    let oco: CString = CString::new(oco).unwrap();
-
-    //    let result: c_int = unsafe { Command(command.as_ptr(), account.as_ptr(), instrument.as_ptr(), 
-    //                                  action.as_ptr(), size, order_type.as_ptr(), limit_price, stop_price, 
-    //                                  tif.as_ptr(), oco.as_ptr(), order_id.as_ptr(), strategy.as_ptr(), strategy_id.as_ptr()) };
-    //    let result: i32 = i32::try_from(result).unwrap();
-    //    match result {
-    //        0 => Ok(()),
-    //        -1 => Err(CommandError(nt_command.to_string())),
-    //        _ => panic!("Command() returned an unexpected value"),
-    //    }
-    //}
 
     /* todo */
     // may need debugging. does it return an error or the value of the toggle?
