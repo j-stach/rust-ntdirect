@@ -1,8 +1,6 @@
 use std::ffi::*;
 
 
-// Should create type aliases for these in future, wait until it becomes confusing on the safe side
-
 #[link(name = "NTDirect", /* path = "" */)]
 extern "C" {
     /// Sets the ask price and size for a specified instrument. Return value indicates success or error.
@@ -34,7 +32,7 @@ extern "C" {
                    order_type: *const c_char, limit_price: *const c_double, stop_price: *const c_double, 
                    tif: *const c_char, oco: *const c_char, order_id: *const c_char, strategy: *const c_char, strategy_id: *const c_char) -> c_int;
 
-    /// Indicates if an order confirmation message will appear. For use with NT trading platform.
+    /// Toggles if an order confirmation message will appear in NT trading platform.
     pub fn ConfirmOrders(confirm: c_int) -> c_int;
 
     /// Return value indicates NT platform connection status, 0 for true, -1 for false.
