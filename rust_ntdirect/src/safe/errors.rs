@@ -3,7 +3,7 @@ use std::error::Error;
 use std::fmt::{Display, Formatter, Result};
 
 #[derive(Debug)]
-pub(super) enum NTDirectError {
+pub enum NTDirectError {
     ConfigurationError(String),
     ConnectionError(String),
     OrderError(String),
