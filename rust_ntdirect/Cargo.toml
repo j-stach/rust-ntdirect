@@ -7,4 +7,8 @@ edition = "2021"
 
 [dependencies]
 chrono = "0.4.23"
-crate = "0.0.2"
+
+[build]
+rustc-link-search = "C:/Windows/SysWOW64"
+rustc-link-lib = "NtDirect.dll"
+linker = "gcc"

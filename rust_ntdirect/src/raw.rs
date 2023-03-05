@@ -1,7 +1,7 @@
 use std::ffi::*;
 
 
-#[link(name = "C:\\Windows\\SysWOW64\\NtDirect.dll")]
+#[link(name = "NtDirect.dll", kind = "raw-dylib")]
 extern "C" {
     /// Sets the ask price and size for a specified instrument. Return value indicates success or error.
     pub fn Ask(instrument: *const c_char, price: c_double, size: c_int) -> c_int;

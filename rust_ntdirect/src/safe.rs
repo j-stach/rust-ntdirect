@@ -1,4 +1,5 @@
 
+
 mod helpers;
 mod errors;
 mod commands;
@@ -9,6 +10,7 @@ pub mod safe {
 
     use std::ffi::*;
     use std::result::Result; 
+    use std::convert::TryFrom;
     use chrono::{DateTime, Utc};
 
     use crate::raw::*;

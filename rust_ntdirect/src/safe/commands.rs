@@ -2,6 +2,7 @@
 mod commands {
     use std::ffi::*;
     use std::result::Result; 
+    use std::convert::TryFrom;
 
     use crate::raw::*;
     use crate::safe::helpers::helpful_types::{*, NTCommand::*};
