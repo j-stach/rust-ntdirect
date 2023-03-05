@@ -4,7 +4,7 @@ mod commands {
     use std::result::Result; 
 
     use crate::raw::*;
-    use crate::safe::helpers::helpful_types::*;
+    use crate::safe::helpers::helpful_types::{*, NTCommand::*};
     use crate::safe::errors::{NTDirectError, NTDirectError::*};
 
 
@@ -41,41 +41,41 @@ mod commands {
 
 
     fn cancel(order_id: &str, strategy_id: Option<&str>) -> Result<(), NTDirectError> {
-        command(NTCommand::Cancel, None, None, None, None, None, None, None, None, None, Some(order_id), None, strategy_id)
+        command(Cancel, None, None, None, None, None, None, None, None, None, Some(order_id), None, strategy_id)
 
     }
 
     fn cancel_all_orders() -> Result<(), NTDirectError> {
-        command(NTCommand::CancelAllOrders, None, None, None, None, None, None, None, None, None, None, None, None)
+        command(CancelAllOrders, None, None, None, None, None, None, None, None, None, None, None, None)
     }
 
     fn change(order_id: &str, size: Option<i32>, limit_price: Option<f64>, stop_price: Option<f64>, strategy_id: Option<&str>) -> Result<(), NTDirectError> {
-        command(NTCommand::Change, None, None, None, size, None, limit_price, stop_price, None, None, Some(order_id), None, strategy_id)
+        command(Change, None, None, None, size, None, limit_price, stop_price, None, None, Some(order_id), None, strategy_id)
     }
 
     fn close_position(account: &str, instrument: &str) -> Result<(), NTDirectError> {
-        command(NTCommand::ClosePosition, Some(account), Some(instrument), None, None, None, None, None, None, None, None, None, None)
+        command(ClosePosition, Some(account), Some(instrument), None, None, None, None, None, None, None, None, None, None)
     }
 
     fn close_strategy(strategy_id: &str) -> Result<(), NTDirectError> {
-        command(NTCommand::CloseStrategy, None, None, None, None, None, None, None, None, None, None, None, Some(strategy_id))
+        command(CloseStrategy, None, None, None, None, None, None, None, None, None, None, None, Some(strategy_id))
     }
 
     fn flatten_everything() -> Result<(), NTDirectError> {
-        command(NTCommand::FlattenEverything, None, None, None, None, None, None, None, None, None, None, None, None)
+        command(FlattenEverything, None, None, None, None, None, None, None, None, None, None, None, None)
     }
 
     fn place(account: &str, instrument: &str, action: NTAction, size: i32, order_type: OrderType, 
              limit_price: Option<f64>, stop_price: Option<f64>, tif: Option<TIF>, oco: Option<&str>, 
              order_id: Option<&str>, strategy: Option<&str>, strategy_id: Option<&str>) 
              -> Result<(), NTDirectError> {
-        command(NTCommand::Place, Some(account), Some(instrument), Some(action), Some(size), Some(order_type), limit_price, stop_price, tif, oco, order_id, strategy, strategy_id)
+        command(Place, Some(account), Some(instrument), Some(action), Some(size), Some(order_type), limit_price, stop_price, tif, oco, order_id, strategy, strategy_id)
     }
 
     fn reverse_position(account: &str, instrument: &str, action: NTAction, size: i32, order_type: OrderType, 
                         limit_price: Option<f64>, stop_price: Option<f64>, tif: Option<TIF>, oco: Option<&str>, 
                         order_id: Option<&str>, strategy: Option<&str>, strategy_id: Option<&str>) 
                         -> Result<(), NTDirectError> {
-        command(NTCommand::ReversePosition, Some(account), Some(instrument), Some(action), Some(size), Some(order_type), limit_price, stop_price, tif, oco, order_id, strategy, strategy_id)
+        command(ReversePosition, Some(account), Some(instrument), Some(action), Some(size), Some(order_type), limit_price, stop_price, tif, oco, order_id, strategy, strategy_id)
     }
 }
