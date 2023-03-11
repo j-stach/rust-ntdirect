@@ -5,4 +5,4 @@ FFI library for NinjaTrader's NTDirect C++ API
 
 https://forum.ninjatrader.com/forum/ninjatrader-8/add-on-development/1237995-linking-to-ntdirect-dll-any-info-on-the-binary
 
-Will be shifting this project to rust-ntclient which will make use of the supported C# API
+Putting this on hold for now.
